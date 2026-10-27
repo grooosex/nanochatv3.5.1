@@ -197,10 +197,17 @@ export function PurePane() {
             });
           }}
           onClose={closeSheet}
+          onOpenFav={() => setSheet("fav")}
         />
       )}
       {sheet === "fav" && (
-        <FavSheet currentBlob={item?.blobId} previewId={peekId} onPreview={setPeekId} onClose={closeSheet} />
+        <FavSheet
+          currentBlob={item?.blobId}
+          previewId={peekId}
+          onPreview={setPeekId}
+          onClose={closeSheet}
+          onOpenParams={() => setSheet("params")}
+        />
       )}
       {sheet === "hist" && (
         <HistSheet
@@ -295,11 +302,13 @@ function FavSheet({
   previewId,
   onPreview,
   onClose,
+  onOpenParams,
 }: {
   currentBlob?: string;
   previewId: string | null;
   onPreview: (id: string) => void;
   onClose: () => void;
+  onOpenParams: () => void;
 }) {
   const favorites = useApp((s) => s.favorites);
   const favGroups = useApp((s) => s.favGroups);
@@ -708,7 +717,9 @@ function FavSheet({
             </div>
           ) : (
             <div className="flex shrink-0 items-center gap-1.5 px-4 py-3">
-              <div className="shrink-0 text-[16px] font-semibold">收藏</div>
+              <button type="button" className="shrink-0 text-[16px] font-semibold" onClick={onOpenParams}>
+                收藏
+              </button>
               <button
                 type="button"
                 className={
@@ -1339,11 +1350,13 @@ function HistCell({ item, active, onPreview }: { item: HistoryItem; active?: boo
 
 function PureParamsSheet({
   onClose,
+  onOpenFav,
   phase,
   left,
   onDraw,
 }: {
   onClose: () => void;
+  onOpenFav: () => void;
   phase: "uploading" | "generating" | "receiving" | null;
   left: number;
   onDraw: () => void;
@@ -1355,7 +1368,9 @@ function PureParamsSheet({
     <div className="absolute inset-0 z-30 flex flex-col bg-overlay/40">
       <div className="mt-10 flex min-h-0 flex-1 flex-col overflow-hidden rounded-t-[28px] bg-bg text-ink">
         <div className="relative flex h-12 shrink-0 items-center px-4">
-          <div className="font-serif text-[18px] leading-[26px]">参数设置</div>
+          <button type="button" className="font-serif text-[18px] leading-[26px]" onClick={onOpenFav}>
+            参数设置
+          </button>
           <button
             type="button"
             className="absolute left-1/2 top-1/2 inline-flex h-[26px] min-w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-3 text-[15px] leading-none text-on-primary"

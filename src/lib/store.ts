@@ -203,6 +203,7 @@ interface State {
   wechatStickers: WechatSticker[];
   hydrate: () => Promise<void>;
   toast: (text: string) => void;
+  dismissToast: (id: number) => void;
   setUI: (p: Partial<UI>) => void;
   setSettings: (p: Partial<Settings>) => void;
   setGrok: (id: GrokModelId) => void;
@@ -379,8 +380,9 @@ export const useApp = create<State>((set, get) => ({
   toast: (text) => {
     const id = toastN++;
     set((s) => ({ toasts: [...s.toasts, { id, text }] }));
-    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 1100);
   },
+
+  dismissToast: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 
   setUI: (p) => set((s) => ({ ui: { ...s.ui, ...p } })),
   setTab: (tab) => set((s) => ({ ui: { ...s.ui, tab } })),

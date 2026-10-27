@@ -332,19 +332,45 @@ export function ExpandSelect<T extends string>({
   );
 }
 
+function ToastCard({ id, text }: { id: number; text: string }) {
+  const [held, setHeld] = useState(false);
+  useEffect(() => {
+    if (held) return;
+    const timer = window.setTimeout(() => useApp.getState().dismissToast(id), 2000);
+    return () => window.clearTimeout(timer);
+  }, [held, id]);
+  return (
+    <div
+      className="pointer-events-auto relative w-full max-w-full rounded-[18px] bg-good py-2.5 pl-4 pr-9 text-[13px] leading-snug text-on-primary shadow-lg"
+      style={{ animation: "toast-in 180ms ease" }}
+      onClick={() => setHeld(true)}
+    >
+      <div className="flex items-start gap-2">
+        <Check className="mt-0.5 size-4 shrink-0" />
+        <span className="min-w-0 whitespace-pre-wrap break-words">{text}</span>
+      </div>
+      <button
+        type="button"
+        className="absolute right-1.5 top-1.5 grid size-6 place-items-center"
+        aria-label="关闭"
+        onClick={(e) => {
+          e.stopPropagation();
+          useApp.getState().dismissToast(id);
+        }}
+      >
+        <X className="size-3.5" />
+      </button>
+    </div>
+  );
+}
+
 export function ToastHost() {
   const toasts = useApp((s) => s.toasts);
+  if (toasts.length === 0) return null;
   return (
-    <div className="pointer-events-none fixed inset-x-0 top-3 z-[80] flex justify-center px-4">
+    <div className="pointer-events-none fixed inset-x-0 top-3 z-[80] flex flex-col items-center gap-2 px-4">
       {toasts.map((t) => (
-        <div
-          key={t.id}
-          className="flex items-center gap-2 rounded-full bg-good px-4 py-2 text-[13px] text-on-primary shadow-lg"
-          style={{ animation: "toast-in 180ms ease" }}
-        >
-          <Check className="size-4" />
-          {t.text}
-        </div>
+        <ToastCard key={t.id} id={t.id} text={t.text} />
       ))}
     </div>
   );
